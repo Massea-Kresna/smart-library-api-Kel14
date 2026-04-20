@@ -1,14 +1,21 @@
 import { pool } from '../config/db.js';
 
-export const BookModel = {//mengambil semua buku dengan nama penulis dan kategori (JOIN)
-  async getAll() {
-    const query = `
-      SELECT b.*, a.name as author_name, c.name as category_name 
+export const BookModel = {//pencarian buku jika tidak akan mengambil semua buku dengan nama penulis dan kategori (JOIN)
+  async getAll(search = '') {
+    let query = `
+      SELECT b.*, a.name AS author_name, c.name AS category_name
       FROM books b
       LEFT JOIN authors a ON b.author_id = a.id
       LEFT JOIN categories c ON b.category_id = c.id
     `;
-    const result = await pool.query(query);
+    const params = [];
+
+    if (search) {
+      query += ' WHERE b.title ILIKE $1';
+      params.push(`%${search}%`);
+    }
+
+    const result = await pool.query(query, params);
     return result.rows;
   },
 

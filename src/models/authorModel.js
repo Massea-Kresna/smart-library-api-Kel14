@@ -1,8 +1,17 @@
 import { pool } from '../config/db.js';
 
-export const AuthorModel = { //mengambil semua author
-  async getAll() {
-    const result = await pool.query('SELECT * FROM authors ORDER BY name ASC');
+export const AuthorModel = { //pencarian author jika tidak akan mengambil semua author
+  async getAll(search = '') {
+    let query = 'SELECT * FROM authors';
+    const params = [];
+
+    if (search) {
+      query += ' WHERE name ILIKE $1';
+      params.push(`%${search}%`);
+    }
+
+    query += ' ORDER BY name ASC';
+    const result = await pool.query(query, params);
     return result.rows;
   },
 

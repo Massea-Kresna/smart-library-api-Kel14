@@ -1,8 +1,17 @@
 import { pool } from '../config/db.js';
 
-export const CategoryModel = { //mengambil semua category
-  async getAll() {
-    const result = await pool.query('SELECT * FROM categories ORDER BY name ASC');
+export const CategoryModel = { //pencarian category jika tidak maka akan mengambil semua category
+  async getAll(search = '') {
+    let query = 'SELECT * FROM categories';
+    const params = [];
+
+    if (search) {
+      query += ' WHERE name ILIKE $1';
+      params.push(`%${search}%`);
+    }
+
+    query += ' ORDER BY name ASC';
+    const result = await pool.query(query, params);
     return result.rows;
   },
 
