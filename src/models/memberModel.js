@@ -21,7 +21,7 @@ export const MemberModel = {
     return result.rows[0];
   },
 
-  async update(data) { //memperbarui member
+  async update(id, data) { //memperbarui member
     const { full_name, email, member_type } = data;
     const query = `
       UPDATE members 
