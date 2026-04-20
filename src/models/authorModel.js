@@ -7,7 +7,7 @@ export const AuthorModel = { //mengambil semua author
   },
 
   async getById(id) { //mengambil satu author berdasarkan id
-    const result = await pool.query('SELECT * FROM author WHERE id = $1', [id]);
+    const result = await pool.query('SELECT * FROM authors WHERE id = $1', [id]);
     return result.rows[0];
   },
 
@@ -19,7 +19,7 @@ export const AuthorModel = { //mengambil semua author
 
   async update(id, name, nationality) { //memperbarui data author
     const query = `
-      UPDATE author
+      UPDATE authors
       SET name = $1, nationality = $2
       WHERE id = $3
       RETURNING *
@@ -29,7 +29,7 @@ export const AuthorModel = { //mengambil semua author
   },
 
   async delete(id) { //menghapus data author
-    const query = 'DELETE FROM author WHERE id = $1';
+    const query = 'DELETE FROM authors WHERE id = $1';
     await pool.query(query, [id]);
     return { message: "Penulis berhasil dihapus dari sistem." };
   }
