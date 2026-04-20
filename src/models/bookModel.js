@@ -34,7 +34,7 @@ export const BookModel = {//mengambil semua buku dengan nama penulis dan kategor
     return result.rows[0];
   },
 
-  async update(data) { //memperbarui buku
+  async update(id, data) { //memperbarui buku
     const { isbn, title, author_id, category_id, total_copies } = data;
     const query = `
       UPDATE books 
@@ -47,8 +47,10 @@ export const BookModel = {//mengambil semua buku dengan nama penulis dan kategor
   },
 
   async delete(id) {//menghapus buku
-    const query = 'DELETE FROM books WHERE id = $1';
-    await pool.query(query, [id]);
-    return { message: "Buku berhasil dihapus dari sistem." };
+    await pool.query('DELETE FROM loans WHERE book_id = $1', [id]); //hapus semua data loans yang terkait buku ini terlebih dahulu
+
+    //baru hapus bukunya
+    await pool.query('DELETE FROM books WHERE id = $1', [id]);
+    return { message: 'Buku dan data peminjaman terkait berhasil dihapus.' };
   }
 };
