@@ -3,7 +3,8 @@ import { AuthorModel } from '../models/authorModel.js';
 export const AuthorController = {
   async getAuthors(req, res) {//GET /api/authors
     try {
-      const authors = await AuthorModel.getAll();
+      const { name } = req.query
+      const authors = await AuthorModel.getAll(name);
       res.json(authors);
     } catch (err) {
       res.status(500).json({ error: err.message });
