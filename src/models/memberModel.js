@@ -33,9 +33,11 @@ export const MemberModel = {
     return result.rows[0];
   },
 
-  async delete(id) {//menghapus member
-    const query = 'DELETE FROM members WHERE id = $1';
-    await pool.query(query, [id]);
-    return { message: "Member berhasil dihapus dari sistem." };
+  async delete(id) {
+    await pool.query('DELETE FROM loans WHERE member_id = $1', [id]); //hapus semua data loans yang terkait member ini terlebih dahulu
+
+    //baru hapus membernya
+    await pool.query('DELETE FROM members WHERE id = $1', [id]);
+    return { message: 'Anggota dan data peminjaman terkait berhasil dihapus.' };
   }
 };
