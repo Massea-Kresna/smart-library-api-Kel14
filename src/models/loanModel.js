@@ -43,6 +43,18 @@ export const LoanModel = {
     return result.rows;
   },
 
+  async getById(id) {
+    const query = `
+      SELECT l.*, b.title AS book_title, m.full_name AS member_name
+      FROM loans l
+      JOIN books b ON l.book_id = b.id
+      JOIN members m ON l.member_id = m.id
+      WHERE l.id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+  },
+
   async returnLoan(loan_id) {
     const client = await pool.connect();
     try {
@@ -88,5 +100,11 @@ export const LoanModel = {
     } finally {
       client.release();
     }
+  },
+
+  async deleteLoan(id) {//menghapus loan
+    const query = 'DELETE FROM loans WHERE id = $1';
+    await pool.query(query, [id]);
+    return { message: "Peminjaman berhasil dihapus dari sistem." };
   }
 };
