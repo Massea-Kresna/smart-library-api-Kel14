@@ -56,5 +56,17 @@ export const LoanController = {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  },
+
+  async getTopBorrowers(req, res) {
+    try {
+      const data = await LoanModel.getTopBorrowers();
+      res.json({
+        message: 'Top 3 peminjam buku berhasil diambil.',
+        data
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };

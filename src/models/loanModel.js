@@ -106,5 +106,60 @@ export const LoanModel = {
     const query = 'DELETE FROM loans WHERE id = $1';
     await pool.query(query, [id]);
     return { message: "Peminjaman berhasil dihapus dari sistem." };
+  },
+
+  async getTopBorrowers() {
+    const query = `
+      WITH borrower_stats AS (
+        -- Hitung total pinjaman dan tanggal pinjaman terakhir per member
+        SELECT
+          member_id,
+          COUNT(*)            AS total_loans,
+          MAX(loan_date)      AS last_loan_date
+        FROM loans
+        GROUP BY member_id
+        ORDER BY total_loans DESC
+        LIMIT 3
+      ),
+      favorite_books AS (
+        -- Cari buku yang paling sering dipinjam per member
+        SELECT DISTINCT ON (l.member_id)
+          l.member_id,
+          b.title             AS favorite_title,
+          COUNT(l.book_id)    AS times_borrowed
+        FROM loans l
+        JOIN books b ON l.book_id = b.id
+        GROUP BY l.member_id, b.title
+        ORDER BY l.member_id, times_borrowed DESC
+      )
+      SELECT
+        m.id            AS member_id,
+        m.full_name,
+        m.email,
+        m.member_type,
+        bs.total_loans,
+        bs.last_loan_date,
+        fb.favorite_title,
+        fb.times_borrowed
+      FROM borrower_stats bs
+      JOIN members m  ON bs.member_id  = m.id
+      JOIN favorite_books fb ON fb.member_id = m.id
+      ORDER BY bs.total_loans DESC
+    `;
+
+    const result = await pool.query(query);
+
+    return result.rows.map(row => ({//susun ulang response agar nested sesuai format yang diinginkan
+      member_id:      row.member_id,
+      full_name:      row.full_name,
+      email:          row.email,
+      member_type:    row.member_type,
+      total_loans:    parseInt(row.total_loans),
+      last_loan_date: row.last_loan_date,
+      favorite_book: {
+        title:          row.favorite_title,
+        times_borrowed: parseInt(row.times_borrowed)
+      }
+    }));
   }
 };
