@@ -20,123 +20,147 @@ app.use('/api/authors', authorRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/reports', reportRoutes);
 
-// Landing Page Route (Halaman Dokumentasi API)
+// Landing Page: Interactive Library Dashboard
 app.get('/', (req, res) => {
   res.send(`<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Library API</title>
+  <title>Smart Library - Dashboard Utama</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0 }
-    body { font-family: monospace; background: #f5f5f4; padding: 2rem 1.5rem; min-height: 100vh }
-    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem }
-    .logo { width: 36px; height: 36px; border-radius: 8px; background: white; border: 1px solid #e5e5e5; display: flex; align-items: center; justify-content: center; font-size: 18px }
-    .app-name { font-size: 15px; font-weight: 600; color: #1a1a1a }
-    .app-sub { font-size: 12px; color: #888; margin-top: 2px }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; margin-left: auto }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px }
-    .card { background: white; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden }
-    .card-head { padding: 12px 14px 10px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 8px }
-    .icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px }
-    .card-title { font-size: 12px; font-weight: 600; color: #1a1a1a; letter-spacing: .5px }
-    .card-base { font-size: 11px; color: #aaa; margin-left: auto }
-    .routes { padding: 8px 0 }
-    .route { display: flex; align-items: center; gap: 8px; padding: 5px 14px }
-    .route:hover { background: #fafafa }
-    .badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; min-width: 52px; text-align: center }
-    .get    { background: #e0f2fe; color: #0369a1 }
-    .post   { background: #dcfce7; color: #15803d }
-    .put    { background: #fef9c3; color: #a16207 }
-    .patch  { background: #f3e8ff; color: #7e22ce }
-    .delete { background: #fee2e2; color: #b91c1c }
-    .path   { font-size: 12px; color: #555 }
-    .path span { color: #1a1a1a }
-    .desc   { font-size: 11px; color: #bbb; margin-left: auto }
-    .footer { margin-top: 1.5rem; display: flex; align-items: center; justify-content: space-between }
-    .info   { font-size: 11px; color: #bbb }
-    .tags   { display: flex; gap: 6px }
-    .tag    { font-size: 11px; padding: 3px 8px; border: 1px solid #e5e5e5; border-radius: 4px; color: #888 }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+    .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
   </style>
 </head>
-<body>
-  <div class="header">
-    <div class="logo">📖</div>
-    <div><div class="app-name">Smart Library API</div><div class="app-sub">v1.0.0 · Neon PostgreSQL</div></div>
-    <div class="dot"></div>
+<body class="p-6 md:p-12">
+  <div class="max-w-6xl mx-auto">
+    <header class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
+          <span class="text-4xl">📖</span> Smart Library
+        </h1>
+        <p class="text-slate-500 mt-1">Sistem Manajemen Perpustakaan Terintegrasi v1.0.0</p>
+      </div>
+      <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="text-sm font-semibold text-slate-700">Server Status: Online</span>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div class="glass p-5 rounded-2xl shadow-sm">
+        <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Koleksi</p>
+        <h2 class="text-2xl font-bold text-slate-800" id="stat-books">...</h2>
+      </div>
+      <div class="glass p-5 rounded-2xl shadow-sm">
+        <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Penulis</p>
+        <h2 class="text-2xl font-bold text-slate-800" id="stat-authors">...</h2>
+      </div>
+      <div class="glass p-5 rounded-2xl shadow-sm">
+        <p class="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1">Kategori</p>
+        <h2 class="text-2xl font-bold text-slate-800" id="stat-categories">...</h2>
+      </div>
+      <div class="glass p-5 rounded-2xl shadow-sm">
+        <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Dipinjam</p>
+        <h2 class="text-2xl font-bold text-slate-800" id="stat-loans">...</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            🔍 Cari Buku & Referensi
+          </h3>
+          <div class="relative">
+            <input type="text" id="search-input" placeholder="Masukkan judul buku atau nama penulis..." 
+              class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+            <span class="absolute left-4 top-3.5 opacity-40">🔎</span>
+          </div>
+          <div id="search-results" class="mt-6 space-y-3">
+            <p class="text-sm text-slate-400 italic">Gunakan bar pencarian di atas untuk mulai menjelajahi koleksi...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl">
+          <h3 class="text-lg font-bold mb-4 flex items-center gap-2">🏆 Top Peminjam</h3>
+          <div id="top-borrowers" class="space-y-4">
+            <p class="text-slate-400 text-sm">Memuat data...</p>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <h3 class="text-sm font-bold text-slate-800 mb-3 uppercase tracking-widest">Akses API</h3>
+          <p class="text-xs text-slate-500 mb-4">Akses teknis untuk pengembang sistem perpustakaan.</p>
+          <a href="/api/reports/stats" class="block w-full text-center py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">
+            Lihat Dokumentasi JSON
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-12 py-6 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-slate-400">© 2026 Smart Library Team · Diponegoro University</p>
+      <div class="flex gap-2">
+        <span class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-md">PostgreSQL</span>
+        <span class="px-3 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-md">Express.js</span>
+      </div>
+    </footer>
   </div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#e0f2fe">📝</div><div class="card-title">AUTHORS</div><div class="card-base">/api/authors</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/</span><span class="desc">semua penulis</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/?<span>name=</span></span><span class="desc">cari nama</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>:id</span></span><span class="desc">detail</span></div>
-        <div class="route"><span class="badge post">POST</span><span class="path">/</span><span class="desc">tambah</span></div>
-        <div class="route"><span class="badge put">PUT</span><span class="path">/<span>:id</span></span><span class="desc">update</span></div>
-        <div class="route"><span class="badge delete">DELETE</span><span class="path">/<span>:id</span></span><span class="desc">hapus</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#dcfce7">🏷️</div><div class="card-title">CATEGORIES</div><div class="card-base">/api/categories</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/</span><span class="desc">semua kategori</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/?<span>name=</span></span><span class="desc">cari nama</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>:id</span></span><span class="desc">detail</span></div>
-        <div class="route"><span class="badge post">POST</span><span class="path">/</span><span class="desc">tambah</span></div>
-        <div class="route"><span class="badge put">PUT</span><span class="path">/<span>:id</span></span><span class="desc">update</span></div>
-        <div class="route"><span class="badge delete">DELETE</span><span class="path">/<span>:id</span></span><span class="desc">hapus</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#fef9c3">📚</div><div class="card-title">BOOKS</div><div class="card-base">/api/books</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/</span><span class="desc">semua buku</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/?<span>title=</span></span><span class="desc">cari judul</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>:id</span></span><span class="desc">detail</span></div>
-        <div class="route"><span class="badge post">POST</span><span class="path">/</span><span class="desc">tambah</span></div>
-        <div class="route"><span class="badge put">PUT</span><span class="path">/<span>:id</span></span><span class="desc">update</span></div>
-        <div class="route"><span class="badge delete">DELETE</span><span class="path">/<span>:id</span></span><span class="desc">hapus</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#f3e8ff">👤</div><div class="card-title">MEMBERS</div><div class="card-base">/api/members</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/</span><span class="desc">semua anggota</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>:id</span></span><span class="desc">detail</span></div>
-        <div class="route"><span class="badge post">POST</span><span class="path">/</span><span class="desc">daftar</span></div>
-        <div class="route"><span class="badge put">PUT</span><span class="path">/<span>:id</span></span><span class="desc">update</span></div>
-        <div class="route"><span class="badge delete">DELETE</span><span class="path">/<span>:id</span></span><span class="desc">hapus</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#fee2e2">🔄</div><div class="card-title">LOANS</div><div class="card-base">/api/loans</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/</span><span class="desc">semua peminjaman</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>:id</span></span><span class="desc">detail</span></div>
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>top-borrowers</span></span><span class="desc">top 3</span></div>
-        <div class="route"><span class="badge post">POST</span><span class="path">/</span><span class="desc">pinjam buku</span></div>
-        <div class="route"><span class="badge patch">PATCH</span><span class="path">/<span>:id/return</span></span><span class="desc">kembalikan</span></div>
-        <div class="route"><span class="badge delete">DELETE</span><span class="path">/<span>:id</span></span><span class="desc">hapus</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="icon" style="background:#e0f2fe">📊</div><div class="card-title">REPORTS</div><div class="card-base">/api/reports</div></div>
-      <div class="routes">
-        <div class="route"><span class="badge get">GET</span><span class="path">/<span>stats</span></span><span class="desc">statistik</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="footer">
-    <div class="info">28 endpoints tersedia</div>
-    <div class="tags"><span class="tag">Express.js</span><span class="tag">PostgreSQL</span><span class="tag">Vercel</span></div>
-  </div>
+
+  <script>
+    // Fungsi untuk mengambil statistik awal
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/reports/stats');
+        const data = await res.json();
+        document.getElementById('stat-books').innerText = data.total_books || 0;
+        document.getElementById('stat-authors').innerText = data.total_authors || 0;
+        document.getElementById('stat-categories').innerText = data.total_categories || 0;
+        document.getElementById('stat-loans').innerText = data.active_loans || 0;
+      } catch (e) { console.error("Gagal memuat statistik"); }
+    }
+
+    // Fungsi pencarian buku
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', async (e) => {
+      const q = e.target.value;
+      if(q.length < 2) return;
+      
+      try {
+        const res = await fetch(\`/api/books?title=\${q}\`);
+        const books = await res.json();
+        const container = document.getElementById('search-results');
+        container.innerHTML = books.length ? '' : '<p class="text-sm text-red-400">Buku tidak ditemukan.</p>';
+        
+        books.forEach(b => {
+          container.innerHTML += \`
+            <div class="p-4 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-shadow flex justify-between items-center">
+              <div>
+                <h4 class="font-bold text-slate-800 uppercase text-sm">\${b.title}</h4>
+                <p class="text-xs text-slate-500 italic">\${b.author_name} · \${b.category_name}</p>
+              </div>
+              <span class="text-xs font-bold \${b.available_copies > 0 ? 'text-green-600' : 'text-red-500'}">
+                \${b.available_copies > 0 ? 'Tersedia' : 'Kosong'}
+              </span>
+            </div>
+          \`;
+        });
+      } catch (e) { }
+    });
+
+    loadStats();
+  </script>
 </body>
 </html>`);
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(\`🚀 Server running on http://localhost:\${PORT}\`);
 });
